@@ -8,8 +8,11 @@ parser.add_argument('--vcf_path', default = './data/test.vcf')
 parser.add_argument('--annotation_path', default = './data/1kg_annotations.txt')
 parser.add_argument('--workdir', default = './temp/')
 parser.add_argument('--gpu', action='store_true')
+parser.add_argument('--benchmark', action='store_true')
 
-
+if(args.benchmark):
+    import time
+    t0 = time.time()
 if(args.gpu):
     import cudf
     import gpugwas.io as gwasio
@@ -60,4 +63,5 @@ else:
 
 
 
-
+if(args.benchmark):
+    print('Time Elapsed: {}'.format(time.time()- t0))

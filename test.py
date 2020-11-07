@@ -10,3 +10,5 @@ print(vcf_df)
 print("Test loading annotation file")
 ann_df = gwasio._load_annotations("data/1kg_annotations.txt")
 print(ann_df)
+
+print("===== TEST PASSED ====")

@@ -14,6 +14,9 @@ Working doc for our team is [here](https://docs.google.com/document/d/1d_czQ9OE_
 ![Workflow-diagram](images/workflow.png)
 
 ## Setup Instructions
+```
+pip install -e requirements.txt
+```
 
 ## Example Use Case
 

@@ -68,11 +68,10 @@ def _load_vcf(vcf_file, info_keys=[], format_keys=[]):
 
         #print(dict(record.info))
 
-    return pd.DataFrame.from_dict(df_dict)
+    df = pd.DataFrame.from_dict(df_dict)
+    cuda_df = cudf.DataFrame(df)
+    return cuda_df 
 
-def _vcf_to_df(vcf_file):
-    """Function to load VCF into gwas dataframe."""
-    
 def _load_annotations(annotation_path, delimiter = '\t'):
     """Function to load annotations into a Cudf (GPU accelerated) dataframe"""
     return cudf.read_csv(annotation_path,delimiter=delimiter)

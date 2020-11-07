@@ -18,6 +18,12 @@ Working doc for our team is [here](https://docs.google.com/document/d/1d_czQ9OE_
 pip install -e requirements.txt
 ```
 
+### Test
+To test proper setup, please run the following from the root folder of the repo
+```
+python test.py
+```
+
 ## Example Use Case
 
 ## Results

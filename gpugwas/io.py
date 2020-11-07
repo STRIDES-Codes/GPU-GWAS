@@ -14,16 +14,19 @@ def _add_basic_component(record, sample, df_dict):
     df_dict["alt"].append(nucleotide_dict[record.alts[0]])
     df_dict["sample"].append(sample)
 
-def _add_key_value(key, value, df_dict):
+def _add_key_value(record, sample, key, value, df_dict):
     if isinstance(value, tuple) or isinstance(value, list):
         if len(value) == 1:
+            _add_basic_component(record, sample, df_dict)
             df_dict["key"].append(key)
             df_dict["value"].append(value[0])
         else:
             for i, val in enumerate(value):
+                _add_basic_component(record, sample, df_dict)
                 df_dict["key"].append(f"{key}_{i}")
                 df_dict["value"].append(val)
     else:
+        _add_basic_component(record, sample, df_dict)
         df_dict["key"].append(key)
         df_dict["value"].append(value)
 
@@ -32,7 +35,22 @@ def _load_vcf(vcf_file, info_keys=[], format_keys=[]):
     # Load VCF file using pysam
     reader = pysam.VariantFile(vcf_file)
 
+    if "*" in info_keys:
+        header_dict = dict(reader.header.info)
+        new_keys = []
+        for k in header_dict.keys():
+            new_keys.append(k)
+        info_keys = new_keys
+    if "*" in format_keys:
+        header_dict = dict(reader.header.formats)
+        new_keys = []
+        for k in header_dict.keys():
+            new_keys.append(k)
+        format_keys = new_keys
+
+    print(info_keys)
     info_keys = set(info_keys)
+    print(format_keys)
     format_keys = set(format_keys)
 
     df_dict = defaultdict(list)
@@ -49,13 +67,13 @@ def _load_vcf(vcf_file, info_keys=[], format_keys=[]):
             for key, value in format_dict.items():
                 if key not in format_keys:
                     continue
-                _add_basic_component(record, sample, df_dict)
+                #_add_basic_component(record, sample, df_dict)
                 if key == "GT":
                     if None in list(value):
                         value = -1
                     else:
                         value = sum(list(value))
-                _add_key_value(f"call_{key}", value, df_dict)
+                _add_key_value(record, sample, f"call_{key}", value, df_dict)
 
 
             # Run through all variants and all their info keys
@@ -63,8 +81,8 @@ def _load_vcf(vcf_file, info_keys=[], format_keys=[]):
             for key, value in info_dict.items():
                 if key not in info_keys:
                     continue
-                _add_basic_component(record, sample, df_dict)
-                _add_key_value(key, value, df_dict)
+                #_add_basic_component(record, sample, df_dict)
+                _add_key_value(record, sample, key, value, df_dict)
 
         #print(dict(record.info))
 

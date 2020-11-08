@@ -11,9 +11,11 @@ def run_gwas(phenotypes_df, phenotype_col, feature_cols, algorithm, add_cols=[])
         model  = algorithm()
         feature_columns = [f] + add_cols
         X = cp.array(phenotypes_df[feature_columns].as_gpu_matrix()).astype(cp.float64)
+        #print("fit model for feature {}".format(f))
         model.fit(X,phenotypes_df[phenotype_col].values.astype(cp.float64))
-        
-        for p_val,coef,f in zip(model.p_values[1:],model.coefficients[1:],feature_columns):
+
+        # We just want p value of feature column, not additional columns. so we grab the first element of the list.
+        for p_val,coef,f in zip(model.p_values[1:2],model.coefficients[1:2],feature_columns[0]):
             #print(f'Feature:{f} p_value:{p_val}  coef:{coef}')
             p_value_dict["feature"].append(i)
             p_value_dict["p_value"].append(p_val)

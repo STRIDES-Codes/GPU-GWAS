@@ -21,7 +21,7 @@ pip install -e requirements.txt
 ### Test
 To test proper setup, please run the following from the root folder of the repo
 ```
-python test.py
+python gpugwas_test.py
 ```
 
 ## Package components
@@ -35,5 +35,10 @@ of the GWAS pipeline. The modules are all located under the `gpugwas` folder.
 ## Example Use Case
 
 An example use case of the pipeline is available in `workflow.py`.
+
+To execute, please run
+```
+python workflow.py
+```
 
 ## Results

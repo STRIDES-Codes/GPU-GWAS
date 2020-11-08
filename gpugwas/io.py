@@ -13,6 +13,7 @@ def _add_basic_component(record, sample, df_dict):
     df_dict["pos"].append(record.pos)
     df_dict["ref"].append(nucleotide_dict[record.ref])
     df_dict["alt"].append(nucleotide_dict[record.alts[0]])
+    df_dict["quality"].append(record.qual)
     df_dict["sample"].append(sample)
 
 key_lengths = {"call_AD" : 2, "call_PL" : 3, "AC" : 1, "AF" : 1, "MLEAC" : 1, "MLEAF": 1}
@@ -49,7 +50,7 @@ def create_numerical_features(df, groupby_columns=['chrom','pos','ref','alt']):
     n_features = len(feature_mapping)
 
     df = df.merge(feature_mapping)
-    df = df[['sample','feature_id','value', 'key'] + groupby_columns]
+    #df = df[['sample','feature_id','value', 'key', 'quality'] + groupby_columns]
 
     #assert_one_value_per_feature(df)
 
@@ -112,7 +113,7 @@ def _load_vcf(vcf_file, info_keys=[], format_keys=[]):
 
     df = pd.DataFrame.from_dict(df_dict)
     df, feature_mapping = create_numerical_features(df)
-    df = df.pivot_table(index=['chrom', 'pos', 'ref', 'alt', 'sample', 'feature_id'], columns='key', values='value').reset_index()
+    df = df.pivot_table(index=['chrom', 'pos', 'ref', 'alt', 'sample', 'quality', 'feature_id'], columns='key', values='value').reset_index()
     cuda_df = cudf.DataFrame(df)
     return cuda_df 
 

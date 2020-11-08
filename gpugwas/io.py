@@ -130,7 +130,7 @@ def load_vcf(vcf_file, info_keys=[], format_keys=[]):
         values="value",
     ).reset_index()
     cuda_df = cudf.DataFrame(df)
-    return cuda_df
+    return cuda_df, feature_mapping
 
 
 def load_annotations(annotation_path, delimiter="\t"):

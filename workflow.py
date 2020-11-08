@@ -11,6 +11,7 @@ import gpugwas.filter as gwasfilter
 import gpugwas.algorithms as algos
 import gpugwas.viz as viz
 import gpugwas.dataprep as dp
+import gpugwas.runner as runner
 
 #import gpugwas.processing as gwasproc
 
@@ -22,7 +23,7 @@ args = parser.parse_args()
 
 # Load data
 print("Loading data")
-vcf_df = gwasio.load_vcf(args.vcf_path, info_keys=["AF"], format_keys=["GT", "DP"])
+vcf_df, feature_mapping = gwasio.load_vcf(args.vcf_path, info_keys=["AF"], format_keys=["GT", "DP"])
 print(vcf_df.head())
 print("Loading annotations")
 ann_df = gwasio.load_annotations(args.annotation_path)
@@ -43,30 +44,17 @@ print(vcf_df.head())
 phenotypes_df, n_features = dp.create_phenotype_df(vcf_df, ann_df, ['CaffeineConsumption','isFemale','PurpleHair'],
                                        vcf_sample_col="sample", ann_sample_col="Sample")
 
+# Run PCA on phenotype dataframe
 phenotypes_df = algos.PCA_concat(phenotypes_df, 3)
 
 # Fit linear regression model for each variant feature
 print("Fitting linear regression model")
-p_value_dict = defaultdict(list)
-for i in range(n_features):
-    model  = algos.cuml_LinearReg()
-    feature_columns = [f'variant_{i}']
-    X = cp.array(phenotypes_df[feature_columns].as_gpu_matrix()).astype(cp.float64)
-    model.fit(X,phenotypes_df['CaffeineConsumption'].values.astype(cp.float64))
-    
-    for p_val,coef,f in zip(model.p_values[1:],model.coefficients[1:],feature_columns):
-        print(f'Feature:{f} p_value:{p_val}  coef:{coef}')
-        p_value_dict["feature"].append(i)
-        p_value_dict["p_value"].append(p_val)
-        p_value_dict["chrom"].append(1)
 
-# Visualize p values
-print("Visualizing p values")
-df = pd.DataFrame(p_value_dict)
-df = cudf.DataFrame(df)
+p_value_df = runner.run_gwas(phenotypes_df, 'CaffeineConsumption', n_features, algos.cuml_LinearReg)
+print(p_value_df)
 
 manhattan_spec = {}
-manhattan_spec['df'] = df
+manhattan_spec['df'] = p_value_df
 manhattan_spec['group_by'] = 'chrom'
 manhattan_spec['x_axis'] = 'p_value'
 manhattan_spec['y_axis'] = 'feature'

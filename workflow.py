@@ -41,7 +41,7 @@ vcf_df = gwasfilter.filter_variants(vcf_df)
 print(vcf_df.head())
 
 # Generate phenotypes dataframe
-phenotypes_df, n_features = dp.create_phenotype_df(vcf_df, ann_df, ['CaffeineConsumption','isFemale','PurpleHair'],
+phenotypes_df, n_features = dp.create_phenotype_df(vcf_df, ann_df, ['CaffeineConsumption','isFemale','PurpleHair'], "call_GT",
                                        vcf_sample_col="sample", ann_sample_col="Sample")
 
 # Run PCA on phenotype dataframe

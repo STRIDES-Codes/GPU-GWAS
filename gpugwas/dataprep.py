@@ -27,7 +27,7 @@ import cupy as cp
 #        arg1=(data, indices, indptr), dtype=cp.float32, shape=(n_samples, n_features)
 #    )
 
-def create_matrix_from_features(f_df,n_features, data_col="call_GT"):
+def create_matrix_from_features(f_df,n_features, data_col):
     feature_counts = f_df["sample"].value_counts().reset_index()
     feature_counts.rename(columns={'index':'sample','sample':'feature_counts'},inplace=True)
     feature_counts = feature_counts.sort_values(by=['sample']).reset_index(drop=True)
@@ -42,7 +42,7 @@ def create_matrix_from_features(f_df,n_features, data_col="call_GT"):
     return cp.sparse.csr_matrix(arg1=(data, indices, indptr), dtype=cp.float32,shape=(n_samples,n_features))
 
 
-def create_phenotype_df(vcf_df, ann_df, phenotype_cols, vcf_sample_col="sample", ann_sample_col="Sample"):
+def create_phenotype_df(vcf_df, ann_df, phenotype_cols, vcf_col, vcf_sample_col="sample", ann_sample_col="Sample"):
     # Wrap all the matrix processing code here
 
     # Merge annotations with variant DF
@@ -54,7 +54,7 @@ def create_phenotype_df(vcf_df, ann_df, phenotype_cols, vcf_sample_col="sample",
     print("Creating feature matrix")
     n_features = len(f_df["feature_id"].unique())
     print("Number of independent features is", n_features)
-    matrix  = create_matrix_from_features(f_df, n_features = n_features)
+    matrix  = create_matrix_from_features(f_df, n_features = n_features, data_col=vcf_col)
     matrix = matrix.todense()
     
     # Add variant features to phenotype df

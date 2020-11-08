@@ -41,7 +41,7 @@ vcf_df = gwasfilter.filter_variants(vcf_df)
 print(vcf_df.head())
 
 # Generate phenotypes dataframe
-phenotypes_df, n_features = dp.create_phenotype_df(vcf_df, ann_df, ['CaffeineConsumption','isFemale','PurpleHair'], "call_GT",
+phenotypes_df, features = dp.create_phenotype_df(vcf_df, ann_df, ['CaffeineConsumption','isFemale','PurpleHair'], "call_GT",
                                        vcf_sample_col="sample", ann_sample_col="Sample")
 
 # Run PCA on phenotype dataframe
@@ -51,7 +51,7 @@ print(phenotypes_df)
 # Fit linear regression model for each variant feature
 print("Fitting linear regression model")
 
-p_value_df = runner.run_gwas(phenotypes_df, 'CaffeineConsumption', [0, 1], algos.cuml_LinearReg)
+p_value_df = runner.run_gwas(phenotypes_df, 'CaffeineConsumption', features, algos.cuml_LinearReg)
 print(p_value_df)
 
 manhattan_spec = {}

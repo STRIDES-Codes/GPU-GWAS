@@ -40,7 +40,7 @@ Our experiments were based on the following setup
 ```
 # Make sure CUDA Toolkit 10.2 is installed
 conda create -n rapids-0.16 -c rapidsai -c nvidia -c conda-forge \
-    -c defaults rapids=0.16 python=3.7 cudatoolkit=10.1
+    -c defaults rapids=0.16 python=3.7 cudatoolkit=10.2
 ```
 
 Once the conda environment is setup, additional python dependencies for `gpugwas` are installed from `pip`.

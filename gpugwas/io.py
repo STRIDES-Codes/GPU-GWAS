@@ -4,6 +4,7 @@ import cudf
 import pysam
 from collections import defaultdict
 import pandas as pd
+import math
 
 nucleotide_dict = {'A' : 1, 'C' : 2, 'G' : 3, 'T' : 4}
 
@@ -14,8 +15,12 @@ def _add_basic_component(record, sample, df_dict):
     df_dict["alt"].append(nucleotide_dict[record.alts[0]])
     df_dict["sample"].append(sample)
 
+key_lengths = {"call_AD" : 2, "call_PL" : 3, "AC" : 1, "AF" : 1, "MLEAC" : 1, "MLEAF": 1}
+
 def _add_key_value(record, sample, key, value, df_dict):
     if isinstance(value, tuple) or isinstance(value, list):
+        if None in list(value):
+            value = [math.nan] * key_lengths[key]
         if len(value) == 1:
             _add_basic_component(record, sample, df_dict)
             df_dict["key"].append(key)
@@ -29,6 +34,27 @@ def _add_key_value(record, sample, key, value, df_dict):
         _add_basic_component(record, sample, df_dict)
         df_dict["key"].append(key)
         df_dict["value"].append(value)
+
+def assert_one_value_per_feature(df):
+    '''
+        We should have more than onve value for each sample and feature
+    '''
+    df = df.groupby(by=['sample','feature_id']).count().max()
+    assert df.max()<=1
+
+def create_numerical_features(df, groupby_columns=['chrom','pos','ref','alt']):
+    feature_mapping = df[groupby_columns].drop_duplicates().sort_values(by=groupby_columns).reset_index(drop=True)
+    feature_mapping.reset_index(drop=False,inplace=True)
+    feature_mapping.rename(columns={'index':'feature_id'},inplace=True)
+    n_features = len(feature_mapping)
+
+    df = df.merge(feature_mapping)
+    df = df[['sample','feature_id','value', 'key'] + groupby_columns]
+
+    #assert_one_value_per_feature(df)
+
+    #df = df.sort_values(by=['sample','feature_id']).reset_index(drop=True)
+    return df,feature_mapping
 
 def _load_vcf(vcf_file, info_keys=[], format_keys=[]):
     """Function to load VCF into gwas dataframe."""
@@ -62,7 +88,6 @@ def _load_vcf(vcf_file, info_keys=[], format_keys=[]):
 
         # Run through all variants and all their keys in format
         for sample in record.samples:
-            #print(sample, dict(record.samples[sample]))
             format_dict = dict(record.samples[sample])
             for key, value in format_dict.items():
                 if key not in format_keys:
@@ -84,9 +109,10 @@ def _load_vcf(vcf_file, info_keys=[], format_keys=[]):
                 #_add_basic_component(record, sample, df_dict)
                 _add_key_value(record, sample, key, value, df_dict)
 
-        #print(dict(record.info))
 
     df = pd.DataFrame.from_dict(df_dict)
+    df, feature_mapping = create_numerical_features(df)
+    df = df.pivot_table(index=['chrom', 'pos', 'ref', 'alt', 'sample', 'feature_id'], columns='key', values='value').reset_index()
     cuda_df = cudf.DataFrame(df)
     return cuda_df 
 

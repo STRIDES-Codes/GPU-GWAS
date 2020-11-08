@@ -22,20 +22,6 @@ def PCA_concat(df,components=100):
     scores = pca_float.transform(df[df.columns[df.dtypes == np.float32]])
     return cudf.concat([df, scores],axis=1)
 
-def create_matrix_from_features(f_df,n_features, data_col="call_GT"):
-    feature_counts = f_df["sample"].value_counts().reset_index()
-    feature_counts.rename(columns={'index':'sample','sample':'feature_counts'},inplace=True)
-    feature_counts = feature_counts.sort_values(by=['sample']).reset_index(drop=True)
-
-    n_samples = len(feature_counts)
-
-    data = f_df[data_col].values
-    indices = f_df["feature_id"].values
-    indptr = feature_counts['feature_counts'].cumsum().values
-    indptr = cp.pad(indptr, (1, 0), "constant")
-
-    return cp.sparse.csr_matrix(arg1=(data, indices, indptr), dtype=cp.float32,shape=(n_samples,n_features))
-
 
 ## Port of sklearn Logistic Regression
 # From: https://gist.github.com/rspeare/77061e6e317896be29c6de9a85db301d

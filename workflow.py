@@ -10,6 +10,7 @@ import gpugwas.io as gwasio
 import gpugwas.filter as gwasfilter
 import gpugwas.algorithms as algos
 import gpugwas.viz as viz
+import gpugwas.dataprep as dp
 
 #import gpugwas.processing as gwasproc
 
@@ -38,26 +39,9 @@ print("Filtering variants")
 vcf_df = gwasfilter.filter_variants(vcf_df)
 print(vcf_df.head())
 
-# Merge annotations with variant DF
-print("Merging annotations")
-f_df = ann_df.merge(vcf_df,how='inner',left_on = ['Sample'],right_on = ['sample'])
-print(f_df)
-
-# Create feature matrix
-print("Creating feature matrix")
-n_features = len(f_df["feature_id"].unique())
-print(n_features)
-matrix  = algos.create_matrix_from_features(f_df, n_features = n_features)
-matrix = matrix.todense()
-
-# Add variant features to phenotype df
-print("Adding variant features to phenotype df")
-phenotypes_df = f_df[['Sample','CaffeineConsumption','isFemale','PurpleHair']].drop_duplicates()
-phenotypes_df = phenotypes_df.sort_values(by=['Sample']).reset_index(drop=True)
-for i in range(n_features):
-    phenotypes_df[f'variant_{i}']= matrix[:,i]
-print(phenotypes_df)
-
+# Generate phenotypes dataframe
+phenotypes_df, n_features = dp.create_phenotype_df(vcf_df, ann_df, ['CaffeineConsumption','isFemale','PurpleHair'],
+                                       vcf_sample_col="sample", ann_sample_col="Sample")
 
 phenotypes_df = algos.PCA_concat(phenotypes_df, 3)
 

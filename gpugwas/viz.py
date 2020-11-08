@@ -2,21 +2,28 @@
 """
 Pre-reqs:
 ---------
+apt install orca libxss1
+
 /opt/conda/envs/rapids/bin/pip install \
     dash \
     jupyter-dash \
     dash_bootstrap_components \
     dash_core_components \
-    dash_html_components
+    dash_html_components \
+    dash_bio
 """
 
+import os
 import cudf
+import cupy
 
+import plotly
 import plotly.graph_objects as go
 import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_bio as dashbio
 
 from dash.dependencies import Input, Output, State, ALL
 
@@ -26,11 +33,13 @@ EXT_STYLES = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.BOOTSTRAP
 
 class ManhattanPlot:
 
-    def __init__(self, qq_spec, manhattan_spec):
+    def __init__(self, qq_spec, manhattan_spec, fig_path=None):
         self.app = dash.Dash( __name__, external_stylesheets=EXT_STYLES)
 
         self.qq_spec = qq_spec
         self.manhattan_spec = manhattan_spec
+
+        self.fig_path = fig_path
 
         self.app.layout = self._construct()
 
@@ -121,7 +130,13 @@ class ManhattanPlot:
 
     def _construct(self):
         manhattan_fig = self._construct_manhatten()
-        #scatter_fig = self._construct_qq()
+        # qq_plot_fig = self._construct_qq()
+
+        if self.fig_path:
+            manhattan_fig.write_html(
+                os.path.join(self.fig_path, "manhattan.html"))
+            #qq_plot_fig.write_html(
+            #    os.path.join(self.fig_path, "qq_plot.html"))
 
         layout = html.Div([
             html.Div(
@@ -130,7 +145,7 @@ class ManhattanPlot:
                         """
                         **GWAS**
                         """), 
-                    #html.Div([dcc.Graph(id='scatter_fig', figure=scatter_fig),]),
+                    # html.Div([dcc.Graph(id='qq_plot_fig', figure=qq_plot_fig),]),
                     html.Div([dcc.Graph(id='manhattan-figure', figure=manhattan_fig),]),
                 ]),
             ])
@@ -152,7 +167,9 @@ def main():
     manhattan_spec['x_axis'] = 'P'
     manhattan_spec['y_axis'] = 'ZSCORE'
 
-    plot = ManhattanPlot(qq_spec, manhattan_spec)
+    fig_path = None
+
+    plot = ManhattanPlot(qq_spec, manhattan_spec, fig_path)
     plot.start()
 
 

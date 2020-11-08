@@ -17,18 +17,31 @@ from bokeh.io import output_notebook, push_notebook, show
 output_notebook()
 
 
-def show_qq_plot(df, x_axis, y_axis, title="QQ", save_to=None):
+def show_qq_plot(df, x_axis, y_axis, title="QQ", 
+                 save_to=None, x_max=None, y_max=None):
 
     x_values = cupy.fromDlpack(df[x_axis].to_dlpack())
     y_values = cupy.fromDlpack(df[y_axis].to_dlpack())
 
-    x_max = cupy.max(x_values).tolist()
-    y_max = cupy.max(y_values).tolist()
+    x_values = -cupy.log10(x_values)
+    y_values = -cupy.log10(y_values)
+
+    if x_max is None:
+        x_max = cupy.max(x_values).tolist()
+    if y_max is None:
+        y_max = cupy.max(y_values).tolist()
+
+    if y_max == cupy.inf:
+        print("Please pass y_max. Input contains inf.")
+        return
+    if x_max == cupy.inf:
+        print("Please pass x_max. Input contains inf.")
+        return
 
     qq_fig = figure(x_range=(0, x_max), 
                     y_range=(0, y_max),
                     title=title)
-    qq_fig.circle(-cupy.log10(x_values).get(), -cupy.log10(y_values).get(), size=1)
+    qq_fig.circle(x_values.get(), y_values.get(), size=1)
     qq_fig.line([0, x_max], [0, y_max], line_color='orange', line_width=2)
 
     if save_to:

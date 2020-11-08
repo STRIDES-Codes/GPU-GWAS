@@ -1,9 +1,11 @@
-# GPU-GWAS
+# G2WAS (GPU-GWAS)
+
+![g2was-logo](images/logo.png)
 
 ## Background, description and goals
 TODO: Fill in background on GWAS
 
-This project aims to develop a fast GWAS data analysis pipeline incorporating GPU acceleration and Machine learning.
+G2WAS aims to develop a fast GWAS data analysis pipeline incorporating GPU acceleration and Machine learning.
 
 [rapids.ai](https://rapids.ai/) will be the core SDK that powers this high performance compute. RAPIDS provides GPU-accelerated
 implementations of dataframe and machine learning algorithms which are tens to hundreds of times faster than CPU implementations.
@@ -53,9 +55,9 @@ The `gpugwas` package is broken up into multiple independent modules that deal w
 of the GWAS pipeline. The modules are all located under the `gpugwas` folder.
 
 1. `gpugwas.io` - This module contains I/O related functions such as loading a VCF/annotation file into a CUDA dataframe.
-2. `gpugwas.algorithms` - This module contains ML algorithm implementations in CUDA typically used in GWAS (e.g. linear regression, logistic regression, etc).
-3. `gpugwas.viz` - This module contains functions used in visualizing the GWAS model outputs (manhattan plots, q-q plots, etc)
-4. `gpugwas.filters` - This module containts functions to filter out variants and samples and perform QC on the input data.
+2. `gpugwas.filter` - This module containts functions to filter out variants and samples and perform QC on the input data.
+3. `gpugwas.algorithms` - This module contains ML algorithm implementations in CUDA typically used in GWAS (e.g. linear regression, logistic regression, etc).
+4. `gpugwas.viz` - This module contains functions used in visualizing the GWAS model outputs (manhattan plots, q-q plots, etc)
 
 ## Example Use Case
 Using the package components described above we have built a sample workflow that runs a toy GWAS example.
@@ -64,6 +66,11 @@ The contents of this script follow the workflow outlined above.
 We use the VCF and annotations dataset from the [Hail GWAS example](https://hail.is/docs/0.2/tutorials/01-genome-wide-association-study.html)
 for our experiment. Please download them to your system first before proceeding with the sample.
 
-TODO: Insert jupyter notebook command and link
+Our workflow showcasing the relevant APIs and processing steps is detailed in [jupyter notebook](workflow.ipynb).
+
+To run it on your system, please execute
+```
+jupyter notebook workflow.ipynb
+```
 
 ## Next Steps

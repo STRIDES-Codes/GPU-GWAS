@@ -16,10 +16,11 @@ import numpy as np
 from scipy import stats
 import cudf
 
-def PCA_concat(df,components=100):
-    pca_float = PCA(n_components = 2)
+def PCA_concat(df, n_components=2):
+    pca_float = PCA(n_components = n_components)
     pca_float.fit(df[df.columns[df.dtypes == np.float32]])
     scores = pca_float.transform(df[df.columns[df.dtypes == np.float32]])
+    scores.columns = ['PC' + str(x) for x in range(n_components)]
     return cudf.concat([df, scores],axis=1)
 
 

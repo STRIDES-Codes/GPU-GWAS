@@ -27,7 +27,7 @@ import cupy as cp
 #        arg1=(data, indices, indptr), dtype=cp.float32, shape=(n_samples, n_features)
 #    )
 
-def create_matrix_from_features(f_df,n_features, data_col):
+def create_matrix_from_features(f_df, n_features, data_col):
     feature_counts = f_df["sample"].value_counts().reset_index()
     feature_counts.rename(columns={'index':'sample','sample':'feature_counts'},inplace=True)
     feature_counts = feature_counts.sort_values(by=['sample']).reset_index(drop=True)
@@ -61,7 +61,10 @@ def create_phenotype_df(vcf_df, ann_df, phenotype_cols, vcf_col, vcf_sample_col=
     print("Adding variant features to phenotype df")
     phenotypes_df = f_df[[ann_sample_col] + phenotype_cols].drop_duplicates()
     phenotypes_df = phenotypes_df.sort_values(by=[ann_sample_col]).reset_index(drop=True)
+    features = []
     for i in range(n_features):
-        phenotypes_df[f'variant_{i}']= matrix[:,i]
+        f_name = f'variant_{i}'
+        features.append(f_name)
+        phenotypes_df[f_name]= matrix[:,i]
     print(phenotypes_df)
-    return phenotypes_df, n_features
+    return phenotypes_df, features

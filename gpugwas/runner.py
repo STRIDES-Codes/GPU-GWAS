@@ -5,11 +5,11 @@ import cupy as cp
 import pandas as pd
 import cudf
 
-def run_gwas(phenotypes_df, phenotype_col, feature_cols, algorithm):
+def run_gwas(phenotypes_df, phenotype_col, feature_cols, algorithm, add_cols=[]):
     p_value_dict = defaultdict(list)
     for i, f in enumerate(feature_cols):
         model  = algorithm()
-        feature_columns = [f]
+        feature_columns = [f] + add_cols
         X = cp.array(phenotypes_df[feature_columns].as_gpu_matrix()).astype(cp.float64)
         model.fit(X,phenotypes_df[phenotype_col].values.astype(cp.float64))
         

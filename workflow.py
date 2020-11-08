@@ -46,13 +46,12 @@ phenotypes_df, features = dp.create_phenotype_df(vcf_df, ann_df, ['CaffeineConsu
 
 # Run PCA on phenotype dataframe
 phenotypes_df = algos.PCA_concat(phenotypes_df, 3)
-features.extend(['PC0'])
 print(phenotypes_df)
 
 # Fit linear regression model for each variant feature
 print("Fitting linear regression model")
 
-p_value_df = runner.run_gwas(phenotypes_df, 'CaffeineConsumption', features, algos.cuml_LinearReg)
+p_value_df = runner.run_gwas(phenotypes_df, 'CaffeineConsumption', features, algos.cuml_LinearReg, add_cols=['PC0'])
 print(p_value_df)
 
 manhattan_spec = {}

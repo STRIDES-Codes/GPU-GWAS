@@ -1,5 +1,9 @@
 # G2WAS (GPU-GWAS)
 
+## Presentation
+
+Link to our final group [presentation](https://docs.google.com/presentation/d/1J0Yy-cB7FA5FUvXFRYJaFrNdgugD2daxnyp9KRTYlN0/edit#slide=id.p)!
+
 ![g2was-logo](images/logo.png)
 
 ## Background, description and goals

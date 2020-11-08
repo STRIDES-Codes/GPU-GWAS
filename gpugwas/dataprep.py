@@ -28,6 +28,7 @@ import cupy as cp
 #    )
 
 def create_matrix_from_features(f_df, n_features, data_col):
+    f_df = f_df.sort_values(by=['sample',data_col])
     feature_counts = f_df["sample"].value_counts().reset_index()
     feature_counts.rename(columns={'index':'sample','sample':'feature_counts'},inplace=True)
     feature_counts = feature_counts.sort_values(by=['sample']).reset_index(drop=True)

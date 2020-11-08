@@ -135,8 +135,8 @@ class ManhattanPlot:
         if self.fig_path:
             manhattan_fig.write_html(
                 os.path.join(self.fig_path, "manhattan.html"))
-            qq_plot_fig.write_html(
-                os.path.join(self.fig_path, "qq_plot.html"))
+            #qq_plot_fig.write_html(
+            #    os.path.join(self.fig_path, "qq_plot.html"))
 
         layout = html.Div([
             html.Div(

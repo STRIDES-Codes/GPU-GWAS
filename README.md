@@ -1,9 +1,11 @@
-# GPU-GWAS
+# G2WAS (GPU-GWAS)
+
+![g2was-logo](images/logo.png)
 
 ## Background, description and goals
 TODO: Fill in background on GWAS
 
-This project aims to develop a fast GWAS data analysis pipeline incorporating GPU acceleration and Machine learning.
+G2WAS aims to develop a fast GWAS data analysis pipeline incorporating GPU acceleration and Machine learning.
 
 [rapids.ai](https://rapids.ai/) will be the core SDK that powers this high performance compute. RAPIDS provides GPU-accelerated
 implementations of dataframe and machine learning algorithms which are tens to hundreds of times faster than CPU implementations.
@@ -64,6 +66,11 @@ The contents of this script follow the workflow outlined above.
 We use the VCF and annotations dataset from the [Hail GWAS example](https://hail.is/docs/0.2/tutorials/01-genome-wide-association-study.html)
 for our experiment. Please download them to your system first before proceeding with the sample.
 
-TODO: Insert jupyter notebook command and link
+Our workflow showcasing the relevant APIs and processing steps is detailed in [jupyter notebook](workflow.ipynb).
+
+To run it on your system, please execute
+```
+jupyter notebook workflow.ipynb
+```
 
 ## Next Steps

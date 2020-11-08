@@ -60,8 +60,7 @@ def show_manhattan_plot(df, group_by, x_axis, y_axis,
     
     plot_width = len(chroms) * 50
 
-    manhattan_fig = figure(width=plot_width,
-                           title=title)
+    manhattan_fig = figure(title=title)
     manhattan_fig.xaxis.axis_label = 'Chromosomes'
     manhattan_fig.yaxis.axis_label = '-log10(p)'
 

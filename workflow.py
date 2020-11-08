@@ -5,6 +5,7 @@ from collections import defaultdict
 import cupy as cp
 import cudf
 import pandas as pd
+import rmm
 
 import gpugwas.io as gwasio
 import gpugwas.filter as gwasfilter
@@ -25,6 +26,10 @@ parser.add_argument('--vcf_path', default = './data/test.vcf')
 parser.add_argument('--annotation_path', default = './data/1kg_annotations.txt')
 parser.add_argument('--workdir', default = './temp/')
 args = parser.parse_args()
+
+# Initialize Memory Pool to 10GB
+cudf.set_allocator(pool=True, initial_pool_size=1e10)
+cp.cuda.set_allocator(rmm.rmm_cupy_allocator)
 
 # Load data
 print("Loading data")
@@ -51,13 +56,12 @@ phenotypes_df, features = dp.create_phenotype_df(vcf_df, ann_df, ['CaffeineConsu
 
 # Run PCA on phenotype dataframe
 phenotypes_df = algos.PCA_concat(phenotypes_df, 3)
-features.extend(['PC0'])
 print(phenotypes_df)
 
 # Fit linear regression model for each variant feature
 print("Fitting linear regression model")
 
-p_value_df = runner.run_gwas(phenotypes_df, 'CaffeineConsumption', features, algos.cuml_LinearReg)
+p_value_df = runner.run_gwas(phenotypes_df, 'CaffeineConsumption', features, algos.cuml_LinearReg, add_cols=['PC0'])
 print(p_value_df)
 
 # Please save_to='manhattan.svg' argument to save the plot. This require firefox installed.

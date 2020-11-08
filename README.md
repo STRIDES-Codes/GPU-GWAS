@@ -53,9 +53,9 @@ The `gpugwas` package is broken up into multiple independent modules that deal w
 of the GWAS pipeline. The modules are all located under the `gpugwas` folder.
 
 1. `gpugwas.io` - This module contains I/O related functions such as loading a VCF/annotation file into a CUDA dataframe.
-2. `gpugwas.algorithms` - This module contains ML algorithm implementations in CUDA typically used in GWAS (e.g. linear regression, logistic regression, etc).
-3. `gpugwas.viz` - This module contains functions used in visualizing the GWAS model outputs (manhattan plots, q-q plots, etc)
-4. `gpugwas.filters` - This module containts functions to filter out variants and samples and perform QC on the input data.
+2. `gpugwas.filter` - This module containts functions to filter out variants and samples and perform QC on the input data.
+3. `gpugwas.algorithms` - This module contains ML algorithm implementations in CUDA typically used in GWAS (e.g. linear regression, logistic regression, etc).
+4. `gpugwas.viz` - This module contains functions used in visualizing the GWAS model outputs (manhattan plots, q-q plots, etc)
 
 ## Example Use Case
 Using the package components described above we have built a sample workflow that runs a toy GWAS example.

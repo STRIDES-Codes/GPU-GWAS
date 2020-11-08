@@ -9,7 +9,7 @@ import cudf
 import numpy as np
 import scipy.stats as stat
 
-
+from cuml import PCA
 import cupy as cp
 from cuml import linear_model as cuml_linear_model
 import numpy as np

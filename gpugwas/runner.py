@@ -8,6 +8,9 @@ import cudf
 def run_gwas(phenotypes_df, phenotype_col, feature_cols, algorithm, add_cols=[]):
     p_value_dict = defaultdict(list)
     for i, f in enumerate(feature_cols):
+        if phenotypes_df[f].sum() == 0:
+            continue
+
         model  = algorithm()
         feature_columns = [f] + add_cols
         X = cp.array(phenotypes_df[feature_columns].as_gpu_matrix()).astype(cp.float64)

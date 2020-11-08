@@ -61,7 +61,7 @@ print(phenotypes_df)
 # Fit linear regression model for each variant feature
 print("Fitting linear regression model")
 
-p_value_df = runner.run_gwas(phenotypes_df, 'CaffeineConsumption', features, algos.cuml_LinearReg, add_cols=['PC0'])
+p_value_df = runner.run_gwas(phenotypes_df, 'CaffeineConsumption', features, algos.cuml_LinearReg, add_cols=['PC0', 'PC1'])
 print(p_value_df)
 
 # Please save_to='manhattan.svg' argument to save the plot. This require firefox installed.

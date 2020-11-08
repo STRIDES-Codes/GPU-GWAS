@@ -26,10 +26,10 @@ EXT_STYLES = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.BOOTSTRAP
 
 class ManhattanPlot:
 
-    def __init__(self, scatter_spec, manhattan_spec):
+    def __init__(self, qq_spec, manhattan_spec):
         self.app = dash.Dash( __name__, external_stylesheets=EXT_STYLES)
 
-        self.scatter_spec = scatter_spec
+        self.qq_spec = qq_spec
         self.manhattan_spec = manhattan_spec
 
         self.app.layout = self._construct()
@@ -38,16 +38,16 @@ class ManhattanPlot:
         return self.app.run_server(
             debug=False, use_reloader=False, host=host, port=port)
 
-    def _construct_scatter(self):
+    def _construct_qq(self):
 
-        x_values = self.manhattan_spec['df'][self.manhattan_spec['x_axis']]
-        y_values = self.manhattan_spec['df'][self.manhattan_spec['y_axis']]
+        x_values = self.qq_spec['df'][self.qq_spec['x_axis']]
+        y_values = self.qq_spec['df'][self.qq_spec['y_axis']]
 
         x_max = float(x_values.max())
         y_max = float(y_values.max())
 
         scatter_marker = go.Scattergl({
-                'x': self.manhattan_spec['df'][self.manhattan_spec['x_axis']].to_array(),
+                'x': self.qq_spec['df'][self.qq_spec['x_axis']].to_array(),
                 'y': y_values.to_array(),
                 'mode': 'markers',
                 'marker': {
@@ -121,7 +121,7 @@ class ManhattanPlot:
 
     def _construct(self):
         manhattan_fig = self._construct_manhatten()
-        scatter_fig = self._construct_scatter()
+        scatter_fig = self._construct_qq()
 
         layout = html.Div([
             html.Div(
@@ -141,10 +141,10 @@ class ManhattanPlot:
 def main():
     df = cudf.read_csv('./data/data.csv')
 
-    scatter_spec = {}
-    scatter_spec['df'] = df
-    scatter_spec['x_axis'] = 'P'
-    scatter_spec['y_axis'] = 'ZSCORE'
+    qq_spec = {}
+    qq_spec['df'] = df
+    qq_spec['x_axis'] = 'P'
+    qq_spec['y_axis'] = 'ZSCORE'
 
     manhattan_spec = {}
     manhattan_spec['df'] = df
@@ -152,7 +152,7 @@ def main():
     manhattan_spec['x_axis'] = 'P'
     manhattan_spec['y_axis'] = 'ZSCORE'
 
-    plot = ManhattanPlot(scatter_spec, manhattan_spec)
+    plot = ManhattanPlot(qq_spec, manhattan_spec)
     plot.start()
 
 

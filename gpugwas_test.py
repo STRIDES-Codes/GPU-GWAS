@@ -3,7 +3,7 @@ import cudf
 
 # Test loading VCF
 print("Test loading VCF to DF")
-vcf_df = gwasio._load_vcf("data/test.vcf", info_keys=["*"], format_keys=["*"])
+vcf_df = gwasio.load_vcf("data/test.vcf", info_keys=["*"], format_keys=["*"])
 #vcf_df = gwasio.load_vcf("/home/jdaw/1kg-data/1kg.vcf", info_keys=["*"], format_keys=["*"])
 #vcf_df.to_parquet(path="1kg_full_jdaw_v2.pqt", compression="auto", index=False)
 print(vcf_df)

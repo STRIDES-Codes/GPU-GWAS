@@ -130,7 +130,7 @@ class ManhattanPlot:
 
     def _construct(self):
         manhattan_fig = self._construct_manhatten()
-        qq_plot_fig = self._construct_qq()
+        # qq_plot_fig = self._construct_qq()
 
         if self.fig_path:
             manhattan_fig.write_html(
@@ -145,7 +145,7 @@ class ManhattanPlot:
                         """
                         **GWAS**
                         """), 
-                    html.Div([dcc.Graph(id='qq_plot_fig', figure=qq_plot_fig),]),
+                    # html.Div([dcc.Graph(id='qq_plot_fig', figure=qq_plot_fig),]),
                     html.Div([dcc.Graph(id='manhattan-figure', figure=manhattan_fig),]),
                 ]),
             ])

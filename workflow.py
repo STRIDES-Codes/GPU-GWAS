@@ -46,6 +46,7 @@ phenotypes_df, features = dp.create_phenotype_df(vcf_df, ann_df, ['CaffeineConsu
 
 # Run PCA on phenotype dataframe
 phenotypes_df = algos.PCA_concat(phenotypes_df, 3)
+features.extend(['PC0'])
 print(phenotypes_df)
 
 # Fit linear regression model for each variant feature

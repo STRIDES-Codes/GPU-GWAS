@@ -9,12 +9,19 @@ import cudf
 import numpy as np
 import scipy.stats as stat
 
-
+from cuml import PCA
 import cupy as cp
 from cuml import linear_model as cuml_linear_model
 import numpy as np
 from scipy import stats
 import cudf
+
+def PCA_concat(df, n_components=2):
+    pca_float = PCA(n_components = n_components)
+    pca_float.fit(df[df.columns[df.dtypes == np.float32]])
+    scores = pca_float.transform(df[df.columns[df.dtypes == np.float32]])
+    scores.columns = ['PC' + str(x) for x in range(n_components)]
+    return cudf.concat([df, scores],axis=1)
 
 
 ## Port of sklearn Logistic Regression

@@ -9,11 +9,16 @@ import pandas as pd
 import gpugwas.io as gwasio
 import gpugwas.filter as gwasfilter
 import gpugwas.algorithms as algos
-import gpugwas.viz as viz
 import gpugwas.dataprep as dp
 import gpugwas.runner as runner
 
+from gpugwas.vizb import show_qq_plot, show_manhattan_plot
 #import gpugwas.processing as gwasproc
+
+import warnings
+warnings.filterwarnings('ignore', 'Expected ')
+warnings.simplefilter('ignore')
+
 
 parser = argparse.ArgumentParser(description='Run GPU GWAS Pipeline')
 parser.add_argument('--vcf_path', default = './data/test.vcf')
@@ -54,12 +59,12 @@ print("Fitting linear regression model")
 p_value_df = runner.run_gwas(phenotypes_df, 'CaffeineConsumption', features, algos.cuml_LinearReg, add_cols=['PC0'])
 print(p_value_df)
 
-manhattan_spec = {}
-manhattan_spec['df'] = p_value_df
-manhattan_spec['group_by'] = 'chrom'
-manhattan_spec['x_axis'] = 'p_value'
-manhattan_spec['y_axis'] = 'feature'
-
-viz.ManhattanPlot({}, manhattan_spec)
+# Please save_to='manhattan.svg' argument to save the plot. This require firefox installed.
+# conda install -c conda-forge firefox geckodriver
+manhattan_plot = show_manhattan_plot(
+    p_value_df, 
+    'chrom',  
+    'p_value', 'feature', 
+    title='GWAS Manhattan Plot')
 
 print('Time Elapsed: {}'.format(time.time()- t0))

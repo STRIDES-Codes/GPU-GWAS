@@ -5,17 +5,19 @@ Pre-reqs:
 /opt/conda/envs/rapids/bin/pip install bokeh
 """
 
-import os
 import cudf
 import cupy
 
+from  bokeh.io.export import export_png
+
 from bokeh.plotting import figure
+from bokeh.models.tickers import FixedTicker
 from bokeh.io import output_notebook, push_notebook, show
 
 output_notebook()
 
 
-def show_qq_plot(df, x_axis, y_axis):
+def show_qq_plot(df, x_axis, y_axis, title="QQ", save_to=None):
 
     x_values = cupy.fromDlpack(df[x_axis].to_dlpack())
     y_values = cupy.fromDlpack(df[y_axis].to_dlpack())
@@ -24,27 +26,41 @@ def show_qq_plot(df, x_axis, y_axis):
     y_max = cupy.max(y_values).tolist()
 
     qq_fig = figure(x_range=(0, x_max), 
-                    y_range=(0, y_max))
-    qq_fig.circle(-cupy.log10(x_values+1e-10).get(), -cupy.log10(y_values).get())
-    qq_fig.line([0, x_max], [0, y_max])
+                    y_range=(0, y_max),
+                    title=title)
+    qq_fig.circle(-cupy.log10(x_values).get(), -cupy.log10(y_values).get(), size=1)
+    qq_fig.line([0, x_max], [0, y_max], line_color='orange', line_width=2)
 
-    qq_handle = show(qq_fig, notebook_handle=True)
-    push_notebook(handle=qq_handle)
+    if save_to:
+        export_png(qq_fig, filename=save_to)
+    else:
+        qq_handle = show(qq_fig, notebook_handle=True)
+        push_notebook(handle=qq_handle)
+    
     return qq_fig
 
 
-def show_manhattan_plot(df, group_by, x_axis, y_axis):
+def show_manhattan_plot(df, group_by, x_axis, y_axis, 
+                        title='Manhattan Plot',
+                        save_to=None):
     chroms = df[group_by].unique().to_array()
+    
+    plot_width = len(chroms) * 50
 
-    manhattan_fig = figure()
+    manhattan_fig = figure(width=plot_width,
+                           title=title)
+    manhattan_fig.xaxis.axis_label = 'Chromosomes'
+    manhattan_fig.yaxis.axis_label = '-log10(p)'
 
-    start_position = -0.5
+    manhattan_fig.xaxis.ticker = FixedTicker(ticks=[t for t in chroms])
+
+    start_position = 0.5
     for chrom in chroms:
         query = '%s == %s' % (group_by, chrom)
         cdf = df.query(query)
 
         x_array = cupy.fromDlpack(cdf[x_axis].to_dlpack())  + start_position
-        y_array = cupy.fromDlpack(cdf[y_axis].to_dlpack())
+        y_array = -cupy.log10(cupy.fromDlpack(cdf[y_axis].to_dlpack()))
 
         manhattan_fig.circle(
             x_array.get(),
@@ -53,6 +69,11 @@ def show_manhattan_plot(df, group_by, x_axis, y_axis):
 
         start_position += 1
 
-    manhattan_handle = show(manhattan_fig, notebook_handle=True)
-    push_notebook(handle=manhattan_handle)
+
+    if save_to:
+        export_png(manhattan_fig, filename=save_to)
+    else:
+        manhattan_handle = show(manhattan_fig, notebook_handle=True)
+        push_notebook(handle=manhattan_handle)
+    
     return manhattan_fig

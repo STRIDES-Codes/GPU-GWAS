@@ -19,6 +19,9 @@ def filter_samples(df, min_dp_mean = 4, min_call_rate=0.95):
     df_filtered = df_filtered[df_filtered['sample'].isin(call_rate_filter)]
     print("Number of samples after filtering sample call rate: " + str(len(df_filtered['sample'].unique())))
     
+    df_filtered.reset_index(drop=True, inplace=True)
+    df_filtered.drop(columns='called', inplace=True)
+    
     return df_filtered
 
 
@@ -39,4 +42,14 @@ def filter_variants(df, min_af = 0.1, min_call_rate=0.95):
     df_filtered = df_filtered[df_filtered['feature_id'].isin(call_rate_filter)]
     print("Number of variants after filtering call rate: " + str(len(df_filtered.feature_id.unique())))
     
+    # Reset indices
+    df_filtered.reset_index(drop=True, inplace=True)
+    df_filtered.drop(columns='called', inplace=True)
+    
+    feature_rename = df_filtered.feature_id.unique().reset_index()
+    feature_rename.columns = ['new_feature_id', 'feature_id']
+    df_filtered = df_filtered.merge(feature_rename)
+    df_filtered.drop(columns='feature_id', inplace=True)
+    df_filtered.rename(columns={"new_feature_id": "feature_id"}, inplace=True)
+
     return df_filtered

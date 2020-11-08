@@ -121,7 +121,7 @@ class ManhattanPlot:
 
     def _construct(self):
         manhattan_fig = self._construct_manhatten()
-        scatter_fig = self._construct_qq()
+        #scatter_fig = self._construct_qq()
 
         layout = html.Div([
             html.Div(
@@ -130,7 +130,7 @@ class ManhattanPlot:
                         """
                         **GWAS**
                         """), 
-                    html.Div([dcc.Graph(id='scatter_fig', figure=scatter_fig),]),
+                    #html.Div([dcc.Graph(id='scatter_fig', figure=scatter_fig),]),
                     html.Div([dcc.Graph(id='manhattan-figure', figure=manhattan_fig),]),
                 ]),
             ])

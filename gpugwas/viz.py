@@ -2,30 +2,26 @@
 """
 Pre-reqs:
 ---------
-apt install orca libxss1
-
 /opt/conda/envs/rapids/bin/pip install \
     dash \
     jupyter-dash \
     dash_bootstrap_components \
     dash_core_components \
-    dash_html_components \
-    dash_bio
+    dash_html_components
 """
 
 import os
 import cudf
-import cupy
 
-import plotly
 import plotly.graph_objects as go
 import dash
 import dash_bootstrap_components as dbc
 import dash_core_components as dcc
 import dash_html_components as html
-import dash_bio as dashbio
 
-from dash.dependencies import Input, Output, State, ALL
+# from dash.dependencies import Input, Output, State, ALL
+# from plotly.offline import init_notebook_mode
+# init_notebook_mode(connected = True)
 
 
 EXT_STYLES = ['https://codepen.io/chriddyp/pen/bWLwgP.css', dbc.themes.BOOTSTRAP]
@@ -41,7 +37,7 @@ class ManhattanPlot:
 
         self.fig_path = fig_path
 
-        self.app.layout = self._construct()
+        self.app.layout, self.manhattan_figure = self._construct()
 
     def start(self, host=None, port=5000):
         return self.app.run_server(
@@ -126,6 +122,7 @@ class ManhattanPlot:
                     'tickvals': [t for t in range(int(start_position + 0.5))],
                     'ticktext': [str(t) for t in chroms],
                 }})
+        # plotly.offline.iplot({ "data": manhattan_fig, "layout": go.Layout(title="Sine wave")})
         return manhattan_fig
 
     def _construct(self):
@@ -150,7 +147,7 @@ class ManhattanPlot:
                 ]),
             ])
 
-        return layout
+        return layout, manhattan_fig#, qq_plot_fig
 
 
 def main():

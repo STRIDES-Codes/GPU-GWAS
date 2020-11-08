@@ -1,2 +1,6 @@
 cudf
 pysam==0.16.0.1
+dash
+dash_bootstrap_components
+dash_core_components
+dash_html_components

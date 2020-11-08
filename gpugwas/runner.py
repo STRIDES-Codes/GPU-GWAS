@@ -14,7 +14,7 @@ def run_gwas(phenotypes_df, phenotype_col, n_features, algorithm):
         model.fit(X,phenotypes_df['CaffeineConsumption'].values.astype(cp.float64))
         
         for p_val,coef,f in zip(model.p_values[1:],model.coefficients[1:],feature_columns):
-            print(f'Feature:{f} p_value:{p_val}  coef:{coef}')
+            #print(f'Feature:{f} p_value:{p_val}  coef:{coef}')
             p_value_dict["feature"].append(i)
             p_value_dict["p_value"].append(p_val)
             #p_value_dict["coef"].append(coef)

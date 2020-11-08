@@ -7,7 +7,7 @@ import cudf
 
 def run_gwas(phenotypes_df, phenotype_col, feature_cols, algorithm):
     p_value_dict = defaultdict(list)
-    matrix = cp.array(phenotypes_df[feature_cols].as_gpu_matrix()).astype(cp.float32)
+    matrix = cp.array(phenotypes_df[feature_cols].as_gpu_matrix()).astype(cp.float64)
     y = phenotypes_df[phenotype_col].values.astype(cp.float64)
     del phenotypes_df
 

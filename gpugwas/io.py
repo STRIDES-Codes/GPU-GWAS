@@ -42,7 +42,7 @@ def _add_key_value(record, sample, key, value, df_dict):
         df_dict["value"].append(value)
 
 
-def assert_one_value_per_feature(df):
+def _assert_one_value_per_feature(df):
     """
     We should have more than onve value for each sample and feature
     """
@@ -50,7 +50,7 @@ def assert_one_value_per_feature(df):
     assert df.max() <= 1
 
 
-def create_numerical_features(df, groupby_columns=["chrom", "pos", "ref", "alt"]):
+def _create_numerical_features(df, groupby_columns=["chrom", "pos", "ref", "alt"]):
     feature_mapping = (
         df[groupby_columns]
         .drop_duplicates()
@@ -64,13 +64,13 @@ def create_numerical_features(df, groupby_columns=["chrom", "pos", "ref", "alt"]
     df = df.merge(feature_mapping)
     # df = df[['sample','feature_id','value', 'key', 'quality'] + groupby_columns]
 
-    # assert_one_value_per_feature(df)
+    # _assert_one_value_per_feature(df)
 
     # df = df.sort_values(by=['sample','feature_id']).reset_index(drop=True)
     return df, feature_mapping
 
 
-def _load_vcf(vcf_file, info_keys=[], format_keys=[]):
+def load_vcf(vcf_file, info_keys=[], format_keys=[]):
     """Function to load VCF into gwas dataframe."""
     # Load VCF file using pysam
     reader = pysam.VariantFile(vcf_file)
@@ -123,7 +123,7 @@ def _load_vcf(vcf_file, info_keys=[], format_keys=[]):
                 _add_key_value(record, sample, key, value, df_dict)
 
     df = pd.DataFrame.from_dict(df_dict)
-    df, feature_mapping = create_numerical_features(df)
+    df, feature_mapping = _create_numerical_features(df)
     df = df.pivot_table(
         index=["chrom", "pos", "ref", "alt", "sample", "quality", "feature_id"],
         columns="key",
@@ -133,7 +133,7 @@ def _load_vcf(vcf_file, info_keys=[], format_keys=[]):
     return cuda_df
 
 
-def _load_annotations(annotation_path, delimiter="\t"):
+def load_annotations(annotation_path, delimiter="\t"):
     """Function to load annotations into a Cudf (GPU accelerated) dataframe"""
     return cudf.read_csv(annotation_path, delimiter=delimiter)
 
@@ -213,7 +213,7 @@ def _transform_df(df, sample_key_cols, common_key_cols, common_cols, drop_cols):
     return gdf1
 
 
-def _load_vcf_variantworks(
+def load_vcf_variantworks(
     vcf_file=None,
     num_threads=os.cpu_count(),
     require_genotype=True,
@@ -227,11 +227,29 @@ def _load_vcf_variantworks(
             "Install VariantWorks from https://github.com/clara-parabricks/VariantWorks"
         )
 
-    vcf_df = VCFReader(
+    vcf = VCFReader(
         vcf_file,
         num_threads=num_threads,
         require_genotype=require_genotype,
         info_keys=info_keys,
         format_keys=format_keys,
     )
-    return vcf_df.dataframe
+    vcf_df = vcf.dataframe
+
+    vcf_df_2 = _transform_df(
+        vcf_df,
+        sample_key_cols=list(vcf_df.columns[14:]),
+        common_key_cols=list(vcf_df.columns[7:14]),
+        common_cols=list(vcf_df.columns[0:7]),
+        drop_cols=[
+            "id",
+            "variant_type",
+            "AC-1",
+            "AC-2",
+            "AF-1",
+            "AF-2",
+            "end_pos",
+        ],
+    )
+
+    return vcf_df_2

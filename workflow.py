@@ -58,6 +58,9 @@ for i in range(n_features):
     phenotypes_df[f'variant_{i}']= matrix[:,i]
 print(phenotypes_df)
 
+
+phenotypes_df = algos.PCA_concat(phenotypes_df, 3)
+
 # Fit linear regression model for each variant feature
 print("Fitting linear regression model")
 p_value_dict = defaultdict(list)

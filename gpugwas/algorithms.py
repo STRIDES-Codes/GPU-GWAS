@@ -16,6 +16,12 @@ import numpy as np
 from scipy import stats
 import cudf
 
+def PCA_concat(df,components=100):
+    pca_float = PCA(n_components = 2)
+    pca_float.fit(df[df.columns[df.dtypes == np.float32]])
+    scores = pca_float.transform(df[df.columns[df.dtypes == np.float32]])
+    return cudf.concat([df, scores],axis=1)
+
 def create_matrix_from_features(f_df,n_features, data_col="call_GT"):
     feature_counts = f_df["sample"].value_counts().reset_index()
     feature_counts.rename(columns={'index':'sample','sample':'feature_counts'},inplace=True)

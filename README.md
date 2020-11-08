@@ -24,6 +24,16 @@ To test proper setup, please run the following from the root folder of the repo
 python test.py
 ```
 
+## Package components
+The `gpugwas` package is broken up into multiple independent modules that deal with different components
+of the GWAS pipeline. The modules are all located under the `gpugwas` folder.
+
+1. `gpugwas.io` - This module contains I/O related functions such as loading a VCF/annotation file into a CUDA dataframe.
+2. `gpugwas.algorithms` - This module contains ML algorithm implementations in CUDA typically used in GWAS (e.g. linear regression, logistic regression, etc).
+3. `gpugwas.viz` - This module contains functions used in visualizing the GWAS model outputs (manhattan plots, q-q plots, etc)
+
 ## Example Use Case
+
+An example use case of the pipeline is available in `workflow.py`.
 
 ## Results

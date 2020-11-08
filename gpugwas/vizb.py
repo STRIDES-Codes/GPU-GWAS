@@ -2,12 +2,7 @@
 """
 Pre-reqs:
 ---------
-/opt/conda/envs/rapids/bin/pip install \
-    dash \
-    jupyter-dash \
-    dash_bootstrap_components \
-    dash_core_components \
-    dash_html_components
+/opt/conda/envs/rapids/bin/pip install bokeh
 """
 
 import os
